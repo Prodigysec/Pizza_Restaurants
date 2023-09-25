@@ -23,7 +23,10 @@ migrate = Migrate(app, db)
 # DB init
 db.init_app(app)
 
-
+# Routes
+@app.route('/')
+def index():
+    return '<h1>Pizza Restaurants</h1>'
 
 
 # Main block
