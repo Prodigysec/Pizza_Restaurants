@@ -17,3 +17,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # JSON config
 app.json.compact = False
 
+# DB migration manager
+migrate = Migrate(app, db)
+
+# DB init
+db.init_app(app)
+
