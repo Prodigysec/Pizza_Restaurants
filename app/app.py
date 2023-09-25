@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Imports
-from flask import Flask, make_response, jsonify
+from flask import Flask, make_response, jsonify, request
 from flask_migrate import Migrate
 
 # from models import
@@ -28,6 +28,138 @@ db.init_app(app)
 def index():
     return '<h1>Pizza Restaurants</h1>'
 
+
+@app.route('/restaurants')
+def restaurants():
+    restaurants = []
+    for restaurant in Restaurant.query.all():
+        restaurant_dict = {
+            "name": restaurant.name,
+            "address": restaurant.address,
+        }
+        restaurants.append(restaurant_dict)
+
+    response = make_response(
+        jsonify(restaurants),
+        200
+    )
+
+    return response
+
+
+@app.route('/restaurants/<int:restaurant_id>')
+def restaurant(restaurant_id):
+    restaurant = Restaurant.query.get(restaurant_id)
+    if not restaurant:
+        return make_response(
+            jsonify({"error": "Not found"}),
+            404
+        )
+    else:
+        restaurant_dict = {
+        "name": restaurant.name,
+        "address": restaurant.address,
+    }
+
+    response = make_response(
+        jsonify(restaurant_dict),
+        200
+    )
+
+    return response
+
+
+@app.route('/restaurants/<int:restaurant_id>', methods=['GET','DELETE'])
+def restaurant_by_id(restaurant_id):
+    restaurant = Restaurant.query.get(restaurant_id)
+    if not restaurant:
+        return make_response(
+            jsonify({"error": "Not found"}),
+            404
+        )
+    else:
+        if request.method == 'DELETE':
+            try:
+                restaurant_pizzas = RestaurantPizza.query.filter_by(restaurant_id=restaurant_id).delete()
+                db.session.delete(restaurant)
+                db.session.commit()
+
+                response_body = {
+                    "message": "Restaurant deleted."
+                }
+                response = make_response(
+                    jsonify(response_body),
+                    204
+                )
+                return response
+            except:
+                db.session.rollback()
+                return make_response(
+                    jsonify({'message': 'Error occured while deleting database'})
+                )
+
+
+
+@app.route('/pizzas')
+def pizzas():
+    pizzas = []
+    for pizza in Pizza.query.all():
+        pizza_dict = {
+            "name": pizza.name,
+            "description": pizza.description,
+            "price": pizza.price,
+        }
+        pizzas.append(pizza_dict)
+
+    response = make_response(
+        jsonify(pizzas),
+        200
+    )
+
+    return response
+
+
+@app.route('/restaurantpizza', methods = ['POST'])
+def create_RestaurantPizza():
+    if request.method == 'POST':
+
+        price = request.json.get('price'),
+        pizza_id = request.json.get('pizza_id'),
+        restaurant_id = request.json.get('restaurant_id')
+
+
+        restaurant = Restaurant.query.get(restaurant_id)
+        pizza = Pizza.query.get(pizza_id)
+
+        if not restaurant or not pizza:
+            return jsonify({'error': 'Restaurant or pizza not found'}), 404
+        
+        else:
+            try:
+                restaurantPizza = RestaurantPizza(
+                    price= int(price),
+                    pizza_id=pizza_id,
+                    restaurant_id=restaurant_id
+                )
+                db.session.add(restaurantPizza)
+                db.session.commit()
+
+                response_body = {
+                    "message": "RestaurantPizza created."
+                }
+                response = make_response(
+                    jsonify(restaurantPizza),
+                    201
+                )
+                return response
+            except:
+                db.session.rollback()
+                return make_response(
+                    jsonify({'message': 'Error occured while creating database'})
+                )
+
+        return response
+    
 
 # Main block
 if __name__ == '__main__':
