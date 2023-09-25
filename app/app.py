@@ -23,3 +23,9 @@ migrate = Migrate(app, db)
 # DB init
 db.init_app(app)
 
+
+
+
+# Main block
+if __name__ == '__main__':
+    app.run(port=5555, debug=True)
