@@ -123,9 +123,10 @@ def pizzas():
 def create_RestaurantPizza():
     if request.method == 'POST':
 
-        price = request.json.get('price'),
-        pizza_id = request.json.get('pizza_id'),
-        restaurant_id = request.json.get('restaurant_id')
+        data = request.get_json()
+        restaurant_id = data.get('restaurant_id')
+        pizza_id = data.get('pizza_id')
+        price = data.get('price')
 
 
         restaurant = Restaurant.query.get(restaurant_id)
@@ -137,9 +138,9 @@ def create_RestaurantPizza():
         else:
             try:
                 restaurantPizza = RestaurantPizza(
-                    price= int(price),
                     pizza_id=pizza_id,
-                    restaurant_id=restaurant_id
+                    restaurant_id=restaurant_id,
+                    price=int(price)
                 )
                 db.session.add(restaurantPizza)
                 db.session.commit()
@@ -147,18 +148,15 @@ def create_RestaurantPizza():
                 response_body = {
                     "message": "RestaurantPizza created."
                 }
-                response = make_response(
-                    jsonify(restaurantPizza),
+                return make_response(
+                    jsonify(response_body),
                     201
                 )
-                return response
             except:
                 db.session.rollback()
                 return make_response(
                     jsonify({'message': 'Error occured while creating database'})
                 )
-
-        return response
     
 
 # Main block
