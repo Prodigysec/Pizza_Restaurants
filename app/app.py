@@ -3,6 +3,7 @@
 # Imports
 from flask import Flask, make_response, jsonify, request
 from flask_migrate import Migrate
+import os
 
 # from models import
 from models import db, Restaurant, Pizza, RestaurantPizza
@@ -11,7 +12,8 @@ from models import db, Restaurant, Pizza, RestaurantPizza
 app = Flask(__name__)
 
 # DB config
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI') # Postgresql
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # JSON config
@@ -160,5 +162,5 @@ def create_RestaurantPizza():
     
 
 # Main block
-if __name__ == '__main__':
-    app.run(port=5555, debug=True)
+# if __name__ == '__main__':
+#     app.run(port=5555, debug=True)
