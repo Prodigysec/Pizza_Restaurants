@@ -21,7 +21,7 @@ with app.app_context():
     restaurants = []
     for i in range(20):
         r = Restaurant(
-            name=fake.company(),
+            name=fake.first_name(),
             address=fake.address()
         )
         restaurants.append(r)
