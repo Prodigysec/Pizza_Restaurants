@@ -6,7 +6,7 @@ from flask_migrate import Migrate
 import os
 
 # from models import
-from models import db, Restaurant, Pizza, RestaurantPizza
+from app.models import db, Restaurant, Pizza, RestaurantPizza
 
 # Create Flask app instance
 app = Flask(__name__)
